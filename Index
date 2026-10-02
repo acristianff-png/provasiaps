@@ -1,0 +1,1331 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Banco de Questões — IAPS I</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{
+    --bg:#f4f5f7; --surface:#ffffff; --surface-2:#eef0f4; --border:#dde1e8;
+    --text:#161922; --text-dim:#6b7280; --accent:#2f5fff; --accent-2:#5478ff;
+    --ok:#1a8f5c; --warn:#b4650f; --danger:#c43b3b; --radius:12px;
+    --shadow:0 1px 2px rgba(22,25,34,.05), 0 1px 10px rgba(22,25,34,.04);
+    --facil:#1a8f5c; --medio:#b4650f; --dificil:#c43b3b;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#111319; --surface:#191c24; --surface-2:#20242e; --border:#2b3040;
+      --text:#eceef3; --text-dim:#9aa1b2; --accent:#7c96ff; --accent-2:#9db0ff;
+      --ok:#3fcf8e; --warn:#e0a855; --danger:#ef6f6f;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#111319; --surface:#191c24; --surface-2:#20242e; --border:#2b3040;
+    --text:#eceef3; --text-dim:#9aa1b2; --accent:#7c96ff; --accent-2:#9db0ff;
+    --ok:#3fcf8e; --warn:#e0a855; --danger:#ef6f6f;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:"Manrope", -apple-system, "Segoe UI", sans-serif;
+    font-size:15px; line-height:1.5; letter-spacing:-0.005em;
+  }
+  a{color:var(--accent-2)}
+  header.app{
+    padding:18px 24px; border-bottom:1px solid var(--border); background:var(--surface);
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;
+    position:sticky; top:0; z-index:20;
+  }
+  header.app h1{ font-family:"Source Serif 4", Georgia, serif; font-size:21px; margin:0; font-weight:600; letter-spacing:0; }
+  header.app .sub{ color:var(--text-dim); font-size:13px; }
+  nav.tabs{ display:flex; gap:4px; padding:0 24px; background:var(--surface); border-bottom:1px solid var(--border); overflow-x:auto; }
+  nav.tabs button{
+    background:none; border:none; padding:12px 14px; font-size:14px; color:var(--text-dim);
+    cursor:pointer; border-bottom:2px solid transparent; white-space:nowrap; font-weight:600;
+  }
+  nav.tabs button.active{ color:var(--accent); border-bottom-color:var(--accent); }
+  main{ max-width:1180px; margin:0 auto; padding:22px 24px 60px; }
+  h2{ font-family:"Source Serif 4", Georgia, serif; font-weight:600; letter-spacing:0; }
+  .card{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:18px; box-shadow:var(--shadow); margin-bottom:16px; }
+  .row{ display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; }
+  .field{ display:flex; flex-direction:column; gap:4px; min-width:160px; }
+  .field.grow{ flex:1; }
+  label{ font-size:12.5px; color:var(--text-dim); font-weight:600; }
+  input[type=text], input[type=number], input[type=search], select, textarea{
+    background:var(--surface-2); border:1px solid var(--border); border-radius:7px; color:var(--text);
+    padding:8px 10px; font-size:14px; font-family:inherit;
+  }
+  textarea{ resize:vertical; min-height:70px; }
+  input:focus, select:focus, textarea:focus{ outline:2px solid var(--accent-2); outline-offset:0; }
+  button{ font-family:inherit; cursor:pointer; }
+  .btn{ background:var(--accent); color:#fff; border:none; border-radius:7px; padding:9px 16px; font-size:14px; font-weight:600; }
+  .btn:hover{ background:var(--accent-2); }
+  .btn.secondary{ background:var(--surface-2); color:var(--text); border:1px solid var(--border); }
+  .btn.secondary:hover{ background:var(--border); }
+  .btn.danger{ background:transparent; color:var(--danger); border:1px solid var(--danger); }
+  .btn.danger:hover{ background:var(--danger); color:#fff; }
+  .btn.small{ padding:5px 10px; font-size:12.5px; }
+  .btn:disabled{ opacity:.5; cursor:not-allowed; }
+  .row-actions{ display:flex; flex-wrap:nowrap; gap:6px; align-items:center; justify-content:flex-end; }
+  .icon-btn{
+    width:30px; height:30px; flex:0 0 auto; display:inline-flex; align-items:center; justify-content:center;
+    background:var(--surface-2); border:1px solid var(--border); border-radius:7px; font-size:14px;
+    cursor:pointer; line-height:1; padding:0;
+  }
+  .icon-btn:hover{ background:var(--border); }
+  .icon-btn.danger:hover{ background:var(--danger); filter:brightness(1); }
+  .icon-btn.danger{ border-color:var(--danger); }
+  table{ width:100%; border-collapse:collapse; font-size:13.5px; }
+  th, td{ text-align:left; padding:8px 8px; border-bottom:1px solid var(--border); vertical-align:top; }
+  th{ color:var(--text-dim); font-size:12px; text-transform:uppercase; letter-spacing:.03em; position:sticky; top:0; background:var(--surface); }
+  tr:hover td{ background:var(--surface-2); }
+  .table-wrap{ overflow-x:auto; }
+  .badge{ display:inline-block; padding:2px 8px; border-radius:20px; font-size:11.5px; font-weight:700; color:#fff; }
+  .badge.facil{ background:var(--facil); }
+  .badge.medio{ background:var(--medio); }
+  .badge.dificil{ background:var(--dificil); }
+  .badge.neutro{ background:var(--text-dim); }
+  .badge.outline{ background:transparent; border:1px solid var(--warn); color:var(--warn); }
+  .pill{ display:inline-block; padding:1px 8px; border-radius:20px; font-size:11.5px; background:var(--surface-2); border:1px solid var(--border); color:var(--text-dim); }
+  .muted{ color:var(--text-dim); }
+  .stat-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:10px; }
+  .stat{ background:var(--surface-2); border:1px solid var(--border); border-radius:9px; padding:12px 14px; }
+  .stat .num{ font-size:24px; font-weight:800; color:var(--accent); }
+  .stat .lbl{ font-size:12px; color:var(--text-dim); }
+  .alt-row{ display:flex; align-items:flex-start; gap:8px; margin-bottom:6px; }
+  .alt-row textarea{ flex:1; min-height:44px; }
+  .alt-letter{ width:26px; height:26px; border-radius:50%; background:var(--surface-2); border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12.5px; margin-top:6px; flex-shrink:0; }
+  .modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.45); display:flex; align-items:flex-start; justify-content:center;
+    padding:30px 16px; overflow-y:auto; z-index:100; }
+  .modal{ background:var(--surface); border-radius:var(--radius); border:1px solid var(--border); max-width:720px; width:100%; padding:22px; }
+  .modal h2{ margin-top:0; font-size:17px; }
+  .close-x{ float:right; background:none; border:none; font-size:20px; color:var(--text-dim); line-height:1; }
+  .toast{ position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--accent); color:#fff;
+    padding:10px 18px; border-radius:8px; font-size:13.5px; z-index:200; box-shadow:var(--shadow); opacity:0; transition:opacity .25s; pointer-events:none; }
+  .toast.show{ opacity:1; }
+  .empty{ text-align:center; padding:40px 20px; color:var(--text-dim); }
+  .flex-between{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
+  .q-preview{ border:1px solid var(--border); border-radius:8px; padding:12px 14px; margin-bottom:10px; background:var(--surface-2); }
+  .q-preview .meta{ font-size:11.5px; color:var(--text-dim); margin-bottom:6px; }
+  .q-preview .enun{ white-space:pre-wrap; margin-bottom:8px; }
+  .q-preview .alt{ padding:2px 0; white-space:pre-wrap; }
+  .q-preview .alt.correct{ color:var(--ok); font-weight:700; }
+  .print-area{ display:none; }
+  .checklist{ display:flex; flex-wrap:wrap; gap:6px; max-height:150px; overflow-y:auto; border:1px solid var(--border);
+    border-radius:8px; padding:8px; background:var(--surface-2); }
+  .checklist label{ display:flex; align-items:center; gap:5px; font-weight:400; color:var(--text); background:var(--surface);
+    border:1px solid var(--border); padding:3px 8px; border-radius:20px; font-size:12.5px; cursor:pointer; }
+  .checklist input{ margin:0; }
+  .save-status{ font-size:12px; color:var(--text-dim); }
+  .divider{ border:none; border-top:1px solid var(--border); margin:14px 0; }
+  .revisao-tag{ color:var(--warn); font-size:12px; }
+  select[multiple]{ min-height:90px; }
+  @media print{
+    body *{ visibility:hidden; }
+    .print-area, .print-area *{ visibility:visible; }
+    .print-area{ display:block; position:absolute; top:0; left:0; width:100%; padding:0; }
+    .no-print{ display:none !important; }
+    .page-break{ page-break-after:always; break-after:page; }
+    .page-break-before{ page-break-before:always; break-before:page; }
+  }
+</style>
+</head>
+<body>
+
+<header class="app">
+  <div>
+    <h1>📋 Banco de Questões — IAPS I</h1>
+    <div class="sub">Iniciação à Atenção Primária à Saúde I · cadastro colaborativo e geração de provas</div>
+  </div>
+  <div class="save-status" id="connStatus">conectando…</div>
+</header>
+
+<nav class="tabs no-print">
+  <button data-tab="banco" class="active">Banco de questões</button>
+  <button data-tab="nova">Nova questão</button>
+  <button data-tab="gerar">Gerar prova</button>
+  <button data-tab="provas">Provas geradas</button>
+</nav>
+
+<main>
+
+  <!-- ===================== TAB: BANCO ===================== -->
+  <section id="tab-banco">
+    <div class="card">
+      <div class="flex-between">
+        <div class="stat-grid" id="statGrid" style="flex:1"></div>
+        <div style="margin-left:14px;white-space:nowrap;display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+          <label class="btn secondary small" for="inputImportarJSON" style="cursor:pointer">⬆️ Importar backup (.json)</label>
+          <input type="file" id="inputImportarJSON" accept=".json" style="display:none" />
+        </div>
+      </div>
+      <p class="muted" style="font-size:12px;margin:8px 0 0">Importa (ou reimporta) um backup gerado pelo botão "Exportar tudo" do sistema anterior. Questões com o mesmo <code>idOriginal</code> são atualizadas, não duplicadas.</p>
+    </div>
+
+    <div class="card">
+      <div class="row">
+        <div class="field grow">
+          <label>Buscar no enunciado</label>
+          <input type="search" id="fBusca" placeholder="digite para buscar…" />
+        </div>
+        <div class="field">
+          <label>Tema</label>
+          <select id="fTema"><option value="">Todos</option></select>
+        </div>
+        <div class="field">
+          <label>Tipo</label>
+          <select id="fTipo">
+            <option value="">Todos</option>
+            <option value="objetiva">Objetiva</option>
+            <option value="discursiva">Discursiva</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Dificuldade</label>
+          <select id="fDificuldade">
+            <option value="">Todas</option>
+            <option value="facil">Fácil</option>
+            <option value="medio">Médio</option>
+            <option value="dificil">Difícil</option>
+            <option value="">-</option>
+            <option value="__vazia">Sem dificuldade definida</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Elaborador(a)</label>
+          <select id="fElaborador"><option value="">Todos</option></select>
+        </div>
+        <div class="field">
+          <label>Situação</label>
+          <select id="fSituacao">
+            <option value="">Todas</option>
+            <option value="revisar">Precisa revisão</option>
+            <option value="usada">Já usada em prova</option>
+            <option value="nunca-usada">Nunca usada</option>
+          </select>
+        </div>
+        <div class="field">
+          <button class="btn secondary" id="btnLimparFiltros">Limpar filtros</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:24%">Enunciado</th>
+              <th>Tema</th>
+              <th>Tipo</th>
+              <th>Dificuldade</th>
+              <th>Elaborador(a)</th>
+              <th>Origem</th>
+              <th>Usada?</th>
+              <th>Situação</th>
+              <th style="width:110px"></th>
+            </tr>
+          </thead>
+          <tbody id="bancoTbody"></tbody>
+        </table>
+        <div class="empty" id="bancoEmpty" style="display:none">Nenhuma questão encontrada com esses filtros.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== TAB: NOVA/EDITAR ===================== -->
+  <section id="tab-nova" style="display:none">
+    <div class="card">
+      <h2 id="formTitulo" style="margin-top:0">Nova questão</h2>
+      <input type="hidden" id="editId" value="" />
+      <div class="row">
+        <div class="field grow">
+          <label>Tema *</label>
+          <input type="text" id="qTema" list="temaOptions" placeholder="ex: Gênero, Racismo, Vulnerabilidade..." />
+          <datalist id="temaOptions"></datalist>
+        </div>
+        <div class="field">
+          <label>Tipo *</label>
+          <select id="qTipo">
+            <option value="objetiva">Objetiva (múltipla escolha)</option>
+            <option value="discursiva">Discursiva (aberta)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Dificuldade *</label>
+          <select id="qDificuldade">
+            <option value="">Selecione…</option>
+            <option value="facil">Fácil</option>
+            <option value="medio">Médio</option>
+            <option value="dificil">Difícil</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Elaborado por</label>
+          <input type="text" id="qElaborador" placeholder="seu nome" />
+        </div>
+      </div>
+
+      <div class="field" style="margin-top:12px">
+        <label>Enunciado da questão *</label>
+        <textarea id="qEnunciado" style="min-height:120px" placeholder="Cole ou digite o enunciado completo (pode incluir trechos de leitura, casos clínicos, tabelas em texto, etc.)"></textarea>
+      </div>
+
+      <div id="blocoAlternativas" style="margin-top:14px">
+        <div class="flex-between">
+          <label style="margin:0">Alternativas * <span class="muted" style="font-weight:400">(marque a correta — a letra final é definida automaticamente ao gerar a prova, então a ordem aqui não importa)</span></label>
+          <button class="btn secondary small" id="btnAddAlt" type="button">+ alternativa</button>
+        </div>
+        <div id="altList" style="margin-top:8px"></div>
+      </div>
+
+      <div class="row" style="margin-top:14px">
+        <div class="field grow">
+          <label id="lblDiscussao">Discussão / resolução comentada</label>
+          <textarea id="qDiscussao" placeholder="Explique por que a alternativa correta está certa e, se útil, por que as demais estão erradas."></textarea>
+        </div>
+        <div class="field grow">
+          <label>Referência utilizada</label>
+          <textarea id="qReferencia" placeholder="Referência bibliográfica usada para elaborar a questão"></textarea>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:6px">
+        <div class="field">
+          <label style="display:flex;align-items:center;gap:6px;font-weight:400">
+            <input type="checkbox" id="qPrecisaRevisao" style="width:auto" /> marcar como "precisa revisão" (não entrará em provas geradas até ser revisada)
+          </label>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:16px">
+        <button class="btn" id="btnSalvarQuestao">Salvar questão</button>
+        <button class="btn secondary" id="btnCancelarEdicao" style="display:none">Cancelar edição</button>
+        <span id="formMsg" class="muted"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== TAB: GERAR PROVA ===================== -->
+  <section id="tab-gerar" style="display:none">
+    <div class="card">
+      <h2 style="margin-top:0">Configurar nova prova</h2>
+      <div class="row">
+        <div class="field grow">
+          <label>Título da prova</label>
+          <input type="text" id="gTitulo" placeholder="ex: Prova II — CSAS" />
+        </div>
+        <div class="field">
+          <label>Semestre / identificação (Turma)</label>
+          <input type="text" id="gSemestre" placeholder="ex: 2026.2" />
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:10px">
+        <div class="field grow">
+          <label>Professor(a)</label>
+          <input type="text" id="gProfessora" placeholder="ex: Profa. Elis..." />
+        </div>
+        <div class="field">
+          <label>Valor da prova (pontos)</label>
+          <input type="text" id="gValor" placeholder="ex: 30 pontos" style="width:140px" />
+        </div>
+        <div class="field">
+          <label>Duração</label>
+          <input type="text" id="gDuracao" placeholder="ex: 2 (duas) horas" style="width:160px" />
+        </div>
+      </div>
+      <p class="muted" style="margin:8px 0 0;font-size:12.5px">Esses dados preenchem o cabeçalho oficial (capa + gabarito) quando a prova é impressa/baixada. Departamento, Faculdade e disciplina seguem fixos no modelo da UFMG/IAPS I.</p>
+
+      <hr class="divider" />
+
+      <p style="font-weight:700;margin:0 0 6px">Parte I — questões objetivas</p>
+      <div class="row">
+        <div class="field">
+          <label>Questões fáceis</label>
+          <input type="number" id="gFacil" min="0" value="0" style="width:100px" />
+        </div>
+        <div class="field">
+          <label>Questões médias</label>
+          <input type="number" id="gMedio" min="0" value="0" style="width:100px" />
+        </div>
+        <div class="field">
+          <label>Questões difíceis</label>
+          <input type="number" id="gDificil" min="0" value="0" style="width:100px" />
+        </div>
+      </div>
+
+      <p style="font-weight:700;margin:16px 0 6px">Parte II — questões discursivas (opcional)</p>
+      <div class="row">
+        <div class="field">
+          <label>Questões fáceis</label>
+          <input type="number" id="gFacilD" min="0" value="0" style="width:100px" />
+        </div>
+        <div class="field">
+          <label>Questões médias</label>
+          <input type="number" id="gMedioD" min="0" value="0" style="width:100px" />
+        </div>
+        <div class="field">
+          <label>Questões difíceis</label>
+          <input type="number" id="gDificilD" min="0" value="0" style="width:100px" />
+        </div>
+      </div>
+
+      <div class="field" style="margin-top:12px">
+        <label>Restringir a temas específicos (opcional — deixe tudo desmarcado para usar qualquer tema)</label>
+        <div class="checklist" id="gTemasChecklist"></div>
+      </div>
+
+      <div class="row" style="margin-top:12px">
+        <div class="field">
+          <label style="display:flex;align-items:center;gap:6px;font-weight:400">
+            <input type="checkbox" id="gPriorizarNaoUsadas" checked style="width:auto" /> priorizar questões ainda não usadas
+          </label>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:16px">
+        <button class="btn" id="btnGerarRascunho">🎲 Gerar rascunho</button>
+        <span id="gerarMsg" class="muted"></span>
+      </div>
+    </div>
+
+    <div class="card" id="rascunhoCard" style="display:none">
+      <div class="flex-between">
+        <h2 style="margin:0">Prévia da prova</h2>
+        <div>
+          <button class="btn secondary small" id="btnReshuffle">🔀 Sortear novamente</button>
+        </div>
+      </div>
+      <p class="muted" id="rascunhoResumo"></p>
+      <div id="rascunhoLista"></div>
+      <div class="row" style="margin-top:14px">
+        <button class="btn" id="btnSalvarProva">✅ Salvar e finalizar prova</button>
+        <span id="salvarProvaMsg" class="muted"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== TAB: PROVAS GERADAS ===================== -->
+  <section id="tab-provas" style="display:none">
+    <div class="card">
+      <h2 style="margin-top:0">Provas geradas anteriormente</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Título</th><th>Semestre</th><th>Data</th><th>Nº questões</th><th></th></tr></thead>
+          <tbody id="provasTbody"></tbody>
+        </table>
+        <div class="empty" id="provasEmpty" style="display:none">Nenhuma prova gerada ainda.</div>
+      </div>
+    </div>
+
+    <div class="card" id="viewProvaCard" style="display:none">
+      <div class="flex-between no-print">
+        <h2 style="margin:0" id="viewProvaTitulo"></h2>
+        <div>
+          <button class="btn secondary small" id="btnMostrarProva">Ver prova (sem gabarito)</button>
+          <button class="btn secondary small" id="btnMostrarGabarito">Ver gabarito</button>
+          <button class="btn secondary small" id="btnImprimir">🖨️ Imprimir</button>
+          <button class="btn small" id="btnBaixar">⬇️ Baixar (arquivo para imprimir)</button>
+        </div>
+      </div>
+      <div id="viewProvaConteudo" style="margin-top:14px"></div>
+    </div>
+  </section>
+
+</main>
+
+<div class="print-area" id="printArea"></div>
+
+<div id="modalRoot"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- configuração Supabase ----------
+  const SUPABASE_URL = 'https://cwstvgauueaxupdwomef.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_J3_hfUCVoikQT25v7IbGjQ_z9fUJxDq';
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  function uid(){
+    return (crypto.randomUUID ? crypto.randomUUID() : 'id-' + Date.now() + '-' + Math.random().toString(16).slice(2));
+  }
+
+  // ---------- state ----------
+  let db = true; // sempre "disponível" nesta versão (Supabase)
+  let dbReady = false;
+  let questoes = [];         // live array of {id, ...data}
+  let provas = [];
+  let editingAltCorrect = 0;
+  let rascunho = null;       // draft exam before saving
+  let viewMode = 'prova';    // 'prova' | 'gabarito'
+  let currentViewProva = null;
+
+  const $ = (sel) => document.querySelector(sel);
+  const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+
+  function toast(msg, ms){
+    const t = $('#toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(()=> t.classList.remove('show'), ms||2400);
+  }
+
+  function escapeHtml(s){
+    return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function nl2br(s){
+    return escapeHtml(s||'').replace(/\n/g,'<br>');
+  }
+
+  function dificuldadeLabel(d){
+    return d === 'facil' ? 'Fácil' : d === 'medio' ? 'Médio' : d === 'dificil' ? 'Difícil' : '—';
+  }
+
+  function shuffle(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]]=[a[j],a[i]];
+    }
+    return a;
+  }
+
+  // ---------- tabs ----------
+  $$('nav.tabs button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      $$('nav.tabs button').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      $$('main > section').forEach(s=> s.style.display='none');
+      $('#tab-'+btn.dataset.tab).style.display='block';
+      if(btn.dataset.tab === 'gerar') renderTemasChecklist();
+    });
+  });
+
+  // ---------- db init (Supabase) ----------
+  async function carregarQuestoes(){
+    const { data, error } = await sb.from('iaps1_questoes').select('*').order('criadoEm', { ascending: true });
+    if(error){ $('#connStatus').textContent = 'erro ao sincronizar: ' + error.message; return; }
+    questoes = data || [];
+    dbReady = true;
+    $('#connStatus').textContent = 'sincronizado · ' + questoes.length + ' questões no banco';
+    renderAll();
+  }
+
+  async function carregarProvas(){
+    const { data, error } = await sb.from('iaps1_provas').select('*').order('criadoEm', { ascending: false });
+    if(error) return;
+    provas = data || [];
+    renderProvasTable();
+  }
+
+  async function initDb(){
+    $('#connStatus').textContent = 'conectado — sincronizando…';
+    await carregarQuestoes();
+    await carregarProvas();
+    // tempo real: qualquer alteração feita por qualquer colaborador atualiza a tela de todos
+    sb.channel('iaps1_questoes-rt')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'questoes' }, carregarQuestoes)
+      .subscribe();
+    sb.channel('iaps1_provas-rt')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'provas' }, carregarProvas)
+      .subscribe();
+  }
+
+  function renderAll(){
+    renderStats();
+    renderFilterOptions();
+    renderBancoTable();
+    renderTemasChecklist();
+  }
+
+  // ---------- stats ----------
+  function renderStats(){
+    const total = questoes.length;
+    const revisar = questoes.filter(q=>q.precisaRevisao).length;
+    const semDificuldade = questoes.filter(q=>!q.dificuldade).length;
+    const usadas = questoes.filter(q=>q.usadoAnteriormente).length;
+    const facil = questoes.filter(q=>q.dificuldade==='facil').length;
+    const medio = questoes.filter(q=>q.dificuldade==='medio').length;
+    const dificil = questoes.filter(q=>q.dificuldade==='dificil').length;
+    $('#statGrid').innerHTML = `
+      <div class="stat"><div class="num">${total}</div><div class="lbl">questões no banco</div></div>
+      <div class="stat"><div class="num">${facil}</div><div class="lbl">fáceis</div></div>
+      <div class="stat"><div class="num">${medio}</div><div class="lbl">médias</div></div>
+      <div class="stat"><div class="num">${dificil}</div><div class="lbl">difíceis</div></div>
+      <div class="stat"><div class="num">${semDificuldade}</div><div class="lbl">sem dificuldade definida</div></div>
+      <div class="stat"><div class="num">${revisar}</div><div class="lbl">precisam revisão</div></div>
+      <div class="stat"><div class="num">${usadas}</div><div class="lbl">já usadas em provas</div></div>
+    `;
+  }
+
+  // ---------- filters ----------
+  function uniqueSorted(arr){
+    const seen = new Map();
+    arr.forEach(v=>{
+      if(!v) return;
+      const key = v.trim().toLowerCase();
+      if(!seen.has(key)) seen.set(key, v.trim());
+    });
+    return Array.from(seen.values()).sort((a,b)=>a.localeCompare(b,'pt-BR'));
+  }
+
+  function renderFilterOptions(){
+    const temas = uniqueSorted(questoes.map(q=>q.tema));
+    const elaboradores = uniqueSorted(questoes.map(q=>q.elaboradoPor));
+    const curTema = $('#fTema').value;
+    const curElab = $('#fElaborador').value;
+    $('#fTema').innerHTML = '<option value="">Todos</option>' + temas.map(t=>`<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
+    $('#fElaborador').innerHTML = '<option value="">Todos</option>' + elaboradores.map(t=>`<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
+    $('#fTema').value = curTema;
+    $('#fElaborador').value = curElab;
+    $('#temaOptions').innerHTML = temas.map(t=>`<option value="${escapeHtml(t)}">`).join('');
+  }
+
+  ['fBusca','fTema','fTipo','fDificuldade','fElaborador','fSituacao'].forEach(id=>{
+    $('#'+id).addEventListener('input', renderBancoTable);
+    $('#'+id).addEventListener('change', renderBancoTable);
+  });
+  $('#btnLimparFiltros').addEventListener('click', ()=>{
+    $('#fBusca').value=''; $('#fTema').value=''; $('#fTipo').value=''; $('#fDificuldade').value='';
+    $('#fElaborador').value=''; $('#fSituacao').value='';
+    renderBancoTable();
+  });
+
+  function tipoLabel(t){ return t === 'discursiva' ? 'Discursiva' : 'Objetiva'; }
+
+  function filteredQuestoes(){
+    const busca = $('#fBusca').value.trim().toLowerCase();
+    const tema = $('#fTema').value;
+    const tipo = $('#fTipo').value;
+    const dif = $('#fDificuldade').value;
+    const elab = $('#fElaborador').value;
+    const sit = $('#fSituacao').value;
+    return questoes.filter(q=>{
+      if(busca && !((q.enunciado||'').toLowerCase().includes(busca))) return false;
+      if(tema && (q.tema||'').trim().toLowerCase() !== tema.trim().toLowerCase()) return false;
+      if(tipo && (q.tipo||'objetiva') !== tipo) return false;
+      if(dif === '__vazia' && q.dificuldade) return false;
+      if(dif && dif !== '__vazia' && q.dificuldade !== dif) return false;
+      if(elab && (q.elaboradoPor||'').trim().toLowerCase() !== elab.trim().toLowerCase()) return false;
+      if(sit === 'revisar' && !q.precisaRevisao) return false;
+      if(sit === 'usada' && !q.usadoAnteriormente) return false;
+      if(sit === 'nunca-usada' && q.usadoAnteriormente) return false;
+      return true;
+    }).sort((a,b)=> (a.tema||'').localeCompare(b.tema||'','pt-BR'));
+  }
+
+  function renderBancoTable(){
+    const list = filteredQuestoes();
+    const tbody = $('#bancoTbody');
+    $('#bancoEmpty').style.display = list.length ? 'none' : 'block';
+    tbody.innerHTML = list.map(q=>{
+      const enunPreview = (q.enunciado||'').slice(0,140).replace(/\n/g,' ');
+      const difBadge = q.dificuldade ? `<span class="badge ${q.dificuldade}">${dificuldadeLabel(q.dificuldade)}</span>` : `<span class="badge neutro">—</span>`;
+      const tipoBadge = `<span class="pill">${tipoLabel(q.tipo)}</span>`;
+      const situacao = q.precisaRevisao
+        ? `<span class="badge outline">precisa revisão</span>`
+        : `<span class="pill">ok</span>`;
+      return `<tr>
+        <td>${escapeHtml(enunPreview)}${(q.enunciado||'').length>140?'…':''}</td>
+        <td>${escapeHtml(q.tema||'')}</td>
+        <td>${tipoBadge}</td>
+        <td>${difBadge}</td>
+        <td>${escapeHtml(q.elaboradoPor||'')}</td>
+        <td>${q.origem==='importado' ? `<span class="pill">importada${q.provaOrigem?': '+escapeHtml(q.provaOrigem):''}</span>` : '<span class="pill">manual</span>'}</td>
+        <td>${q.usadoAnteriormente ? '✅' : '—'}</td>
+        <td>${situacao}</td>
+        <td>
+          <div class="row-actions">
+            <button class="icon-btn" title="Ver questão" data-act="ver" data-id="${q.id}">👁️</button>
+            <button class="icon-btn" title="Editar questão" data-act="editar" data-id="${q.id}">✏️</button>
+            <button class="icon-btn danger" title="Excluir questão" data-act="excluir" data-id="${q.id}">🗑️</button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+    // nada mais a fazer aqui: os cliques são tratados por delegação de evento no tbody (ver abaixo)
+  }
+
+  // Delegação de evento única no tbody: mais robusta do que religar listeners a cada render.
+  $('#bancoTbody').addEventListener('click', (e)=>{
+    const btn = e.target.closest('button[data-act]');
+    if(!btn) return;
+    const id = btn.dataset.id;
+    const act = btn.dataset.act;
+    const q = questoes.find(x=>x.id===id);
+    if(!q) return;
+    if(act==='ver') openViewModal(q);
+    if(act==='editar') openEditForm(q);
+    if(act==='excluir') confirmDelete(q);
+  });
+
+  // ---------- view modal ----------
+  function openViewModal(q){
+    const alts = (q.alternativas||[]).map((a,i)=>{
+      const letra = String.fromCharCode(97+i);
+      const correta = i === q.corretaIndex;
+      return `<div class="alt ${correta?'correct':''}">${letra}) ${nl2br(a)} ${correta?' ✓':''}</div>`;
+    }).join('');
+    const modal = `
+      <div class="modal-backdrop" id="viewBackdrop">
+        <div class="modal">
+          <button class="close-x" id="closeView">×</button>
+          <h2>${escapeHtml(q.tema||'(sem tema)')} ${q.dificuldade?`<span class="badge ${q.dificuldade}">${dificuldadeLabel(q.dificuldade)}</span>`:''}</h2>
+          <div class="q-preview">
+            <div class="enun">${nl2br(q.enunciado)}</div>
+            ${alts}
+          </div>
+          ${q.discussao ? `<p><strong>${q.tipo==='discursiva'?'Resposta esperada':'Discussão'}:</strong><br>${nl2br(q.discussao)}</p>` : ''}
+          ${q.referencia ? `<p><strong>Referência:</strong><br>${nl2br(q.referencia)}</p>` : ''}
+          <p class="muted">Tipo: ${tipoLabel(q.tipo)} · Elaborado por: ${escapeHtml(q.elaboradoPor||'—')} ${q.provaOrigem?'· Origem: '+escapeHtml(q.provaOrigem):''}</p>
+          ${q.motivoRevisao ? `<p class="revisao-tag">⚠️ ${escapeHtml(q.motivoRevisao)}</p>` : ''}
+        </div>
+      </div>`;
+    $('#modalRoot').innerHTML = modal;
+    $('#closeView').addEventListener('click', ()=> $('#modalRoot').innerHTML='');
+    $('#viewBackdrop').addEventListener('click', (e)=>{ if(e.target.id==='viewBackdrop') $('#modalRoot').innerHTML=''; });
+  }
+
+  function confirmDelete(q){
+    const modal = `
+      <div class="modal-backdrop" id="confirmBackdrop">
+        <div class="modal" style="max-width:420px">
+          <h2 style="margin-top:0">Excluir questão?</h2>
+          <p class="muted" style="margin-bottom:4px">Essa ação não pode ser desfeita.</p>
+          <p style="background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:13.5px">${escapeHtml((q.enunciado||'(sem enunciado)').slice(0,160))}${(q.enunciado||'').length>160?'…':''}</p>
+          <div class="row" style="margin-top:14px;justify-content:flex-end">
+            <button class="btn secondary" id="cancelDeleteBtn">Cancelar</button>
+            <button class="btn danger" id="confirmDeleteBtn" style="background:var(--danger);color:#fff;border-color:var(--danger)">Excluir definitivamente</button>
+          </div>
+        </div>
+      </div>`;
+    $('#modalRoot').innerHTML = modal;
+    const close = ()=> $('#modalRoot').innerHTML = '';
+    $('#confirmBackdrop').addEventListener('click', (e)=>{ if(e.target.id==='confirmBackdrop') close(); });
+    $('#cancelDeleteBtn').addEventListener('click', close);
+    $('#confirmDeleteBtn').addEventListener('click', async ()=>{
+      const { error } = await sb.from('iaps1_questoes').delete().eq('id', q.id);
+      if(error){ toast('Erro ao excluir: ' + error.message); return; }
+      close(); toast('Questão excluída.'); carregarQuestoes();
+    });
+  }
+
+  // ---------- alternatives editor ----------
+  function altRowHtml(idx, text, correct){
+    const letra = String.fromCharCode(97+idx);
+    return `<div class="alt-row" data-idx="${idx}">
+      <div class="alt-letter">${letra}</div>
+      <input type="radio" name="altCorreta" ${correct?'checked':''} style="margin-top:12px" />
+      <textarea data-role="altText" placeholder="texto da alternativa ${letra}">${escapeHtml(text||'')}</textarea>
+      <button type="button" class="btn danger small" data-role="altRemove" style="margin-top:6px">✕</button>
+    </div>`;
+  }
+
+  function renderAltList(alts, correctIdx){
+    const list = alts && alts.length ? alts : ['',''];
+    $('#altList').innerHTML = list.map((a,i)=> altRowHtml(i, a, i===correctIdx)).join('');
+    bindAltListEvents();
+  }
+
+  function bindAltListEvents(){
+    $('#altList').querySelectorAll('[data-role="altRemove"]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const row = btn.closest('.alt-row');
+        if($('#altList').children.length <= 2){ toast('Mínimo de 2 alternativas.'); return; }
+        row.remove();
+        relabelAltRows();
+      });
+    });
+  }
+
+  function relabelAltRows(){
+    Array.from($('#altList').children).forEach((row,i)=>{
+      row.dataset.idx = i;
+      row.querySelector('.alt-letter').textContent = String.fromCharCode(97+i);
+    });
+  }
+
+  $('#btnAddAlt').addEventListener('click', ()=>{
+    const div = document.createElement('div');
+    div.innerHTML = altRowHtml($('#altList').children.length, '', false);
+    $('#altList').appendChild(div.firstElementChild);
+    bindAltListEvents();
+  });
+
+  function collectAltData(){
+    const rows = Array.from($('#altList').children);
+    const alternativas = rows.map(r => r.querySelector('[data-role="altText"]').value.trim());
+    let corretaIndex = null;
+    rows.forEach((r,i)=>{ if(r.querySelector('input[type=radio]').checked) corretaIndex = i; });
+    return {alternativas, corretaIndex};
+  }
+
+  // ---------- new/edit form ----------
+  function aplicarTipoNoForm(tipo){
+    const discursiva = tipo === 'discursiva';
+    $('#blocoAlternativas').style.display = discursiva ? 'none' : 'block';
+    $('#lblDiscussao').textContent = discursiva ? 'Resposta esperada *' : 'Discussão / resolução comentada';
+    $('#qDiscussao').placeholder = discursiva
+      ? 'Descreva o que se espera na resposta do(a) estudante (pontos-chave, conceitos obrigatórios etc.)'
+      : 'Explique por que a alternativa correta está certa e, se útil, por que as demais estão erradas.';
+  }
+  $('#qTipo').addEventListener('change', ()=> aplicarTipoNoForm($('#qTipo').value));
+
+  function resetForm(){
+    $('#editId').value = '';
+    $('#formTitulo').textContent = 'Nova questão';
+    $('#qTema').value=''; $('#qTipo').value='objetiva'; $('#qDificuldade').value=''; $('#qElaborador').value='';
+    $('#qEnunciado').value=''; $('#qDiscussao').value=''; $('#qReferencia').value='';
+    $('#qPrecisaRevisao').checked = false;
+    renderAltList(['',''], null);
+    aplicarTipoNoForm('objetiva');
+    $('#btnCancelarEdicao').style.display='none';
+    $('#formMsg').textContent='';
+  }
+
+  function openEditForm(q){
+    $$('nav.tabs button').forEach(b=>b.classList.toggle('active', b.dataset.tab==='nova'));
+    $$('main > section').forEach(s=> s.style.display='none');
+    $('#tab-nova').style.display='block';
+
+    $('#editId').value = q.id;
+    $('#formTitulo').textContent = 'Editar questão';
+    $('#qTema').value = q.tema||'';
+    $('#qTipo').value = q.tipo || 'objetiva';
+    $('#qDificuldade').value = q.dificuldade||'';
+    $('#qElaborador').value = q.elaboradoPor||'';
+    $('#qEnunciado').value = q.enunciado||'';
+    $('#qDiscussao').value = q.discussao||'';
+    $('#qReferencia').value = q.referencia||'';
+    $('#qPrecisaRevisao').checked = !!q.precisaRevisao;
+    renderAltList(q.alternativas && q.alternativas.length ? q.alternativas : ['',''], q.corretaIndex);
+    aplicarTipoNoForm(q.tipo || 'objetiva');
+    $('#btnCancelarEdicao').style.display='inline-block';
+    $('#formMsg').textContent='';
+    window.scrollTo(0,0);
+  }
+
+  $('#btnCancelarEdicao').addEventListener('click', resetForm);
+
+  $('#btnSalvarQuestao').addEventListener('click', async ()=>{
+    const tema = $('#qTema').value.trim();
+    const tipo = $('#qTipo').value;
+    const dificuldade = $('#qDificuldade').value;
+    const enunciado = $('#qEnunciado').value.trim();
+    const elaboradoPor = $('#qElaborador').value.trim();
+    const discussao = $('#qDiscussao').value.trim();
+    const referencia = $('#qReferencia').value.trim();
+    const precisaRevisaoManual = $('#qPrecisaRevisao').checked;
+
+    if(!tema || !dificuldade || !enunciado){
+      $('#formMsg').textContent = 'Preencha tema, dificuldade e enunciado.';
+      $('#formMsg').style.color = 'var(--danger)';
+      return;
+    }
+
+    let alternativas = [], corretaIndex = null;
+    if(tipo === 'discursiva'){
+      if(!discussao){
+        $('#formMsg').textContent = 'Descreva a resposta esperada para a questão discursiva.';
+        $('#formMsg').style.color = 'var(--danger)';
+        return;
+      }
+    } else {
+      ({alternativas, corretaIndex} = collectAltData());
+      if(alternativas.filter(a=>a).length < 2){
+        $('#formMsg').textContent = 'Adicione pelo menos 2 alternativas com texto.';
+        $('#formMsg').style.color = 'var(--danger)';
+        return;
+      }
+      if(corretaIndex === null){
+        $('#formMsg').textContent = 'Marque qual alternativa é a correta.';
+        $('#formMsg').style.color = 'var(--danger)';
+        return;
+      }
+    }
+
+    const id = $('#editId').value;
+    const now = new Date().toISOString();
+    const data = {
+      tema, tipo, dificuldade, enunciado, alternativas, corretaIndex,
+      elaboradoPor, discussao, referencia,
+      precisaRevisao: precisaRevisaoManual,
+      atualizadoEm: now
+    };
+
+    let error;
+    if(id){
+      ({ error } = await sb.from('iaps1_questoes').update(data).eq('id', id));
+      if(!error) toast('Questão atualizada.');
+    } else {
+      data.id = uid();
+      data.origem = 'manual';
+      data.usadoAnteriormente = false;
+      data.historicoUso = [];
+      data.criadoEm = now;
+      ({ error } = await sb.from('iaps1_questoes').insert(data));
+      if(!error) toast('Questão cadastrada!');
+    }
+    if(error){
+      $('#formMsg').textContent = 'Erro ao salvar: ' + error.message;
+      $('#formMsg').style.color = 'var(--danger)';
+      return;
+    }
+    resetForm();
+    carregarQuestoes();
+  });
+
+  renderAltList(['',''], null);
+  aplicarTipoNoForm('objetiva');
+
+  // ---------- gerar prova ----------
+  function renderTemasChecklist(){
+    const temas = uniqueSorted(questoes.map(q=>q.tema));
+    const box = $('#gTemasChecklist');
+    const checked = new Set(Array.from(box.querySelectorAll('input:checked')).map(i=>i.value));
+    box.innerHTML = temas.map(t=>`<label><input type="checkbox" value="${escapeHtml(t)}" ${checked.has(t)?'checked':''}/> ${escapeHtml(t)}</label>`).join('') || '<span class="muted">nenhum tema cadastrado ainda</span>';
+  }
+
+  function pickQuestions(tipo, dificuldade, qtd, temasFiltro, priorizarNaoUsadas, exclude){
+    let pool = questoes.filter(q=>
+      !q.precisaRevisao &&
+      (q.tipo||'objetiva') === tipo &&
+      q.dificuldade === dificuldade &&
+      (tipo==='discursiva' ? !!(q.discussao && q.discussao.trim()) : (q.corretaIndex !== null && q.corretaIndex !== undefined && (q.alternativas||[]).length >= 2)) &&
+      !exclude.has(q.id) &&
+      (temasFiltro.length === 0 || temasFiltro.some(t=> (q.tema||'').trim().toLowerCase() === t.trim().toLowerCase()))
+    );
+    if(priorizarNaoUsadas){
+      const naoUsadas = shuffle(pool.filter(q=>!q.usadoAnteriormente));
+      const usadas = shuffle(pool.filter(q=>q.usadoAnteriormente));
+      pool = naoUsadas.concat(usadas);
+    } else {
+      pool = shuffle(pool);
+    }
+    return pool.slice(0, qtd);
+  }
+
+  function montarParte(tipo, contagens, temasFiltro, priorizarNaoUsadas, exclude){
+    const picked = [];
+    [['facil',contagens.facil],['medio',contagens.medio],['dificil',contagens.dificil]].forEach(([nivel,qtd])=>{
+      if(qtd<=0) return;
+      const sel = pickQuestions(tipo, nivel, qtd, temasFiltro, priorizarNaoUsadas, exclude);
+      sel.forEach(q=> exclude.add(q.id));
+      picked.push({nivel, qtd, encontradas: sel.length, questoes: sel});
+    });
+    const faltando = picked.filter(p=>p.encontradas < p.qtd);
+    const lista = picked.flatMap(p=>p.questoes).map(q=>{
+      let alternativas = [], corretaIndex = null;
+      if(tipo === 'objetiva'){
+        const order = shuffle(q.alternativas.map((texto,i)=>({texto, original: i})));
+        corretaIndex = order.findIndex(o=>o.original === q.corretaIndex);
+        alternativas = order.map(o=>o.texto);
+      }
+      return {
+        questaoId: q.id, tipo,
+        tema: q.tema, dificuldade: q.dificuldade,
+        enunciado: q.enunciado,
+        alternativas, corretaIndex,
+        discussao: q.discussao||'', referencia: q.referencia||'',
+        elaboradoPor: q.elaboradoPor||''
+      };
+    });
+    return { lista: shuffle(lista), faltando };
+  }
+
+  function buildRascunho(){
+    const contagensObj = {
+      facil: parseInt($('#gFacil').value)||0,
+      medio: parseInt($('#gMedio').value)||0,
+      dificil: parseInt($('#gDificil').value)||0
+    };
+    const contagensDisc = {
+      facil: parseInt($('#gFacilD').value)||0,
+      medio: parseInt($('#gMedioD').value)||0,
+      dificil: parseInt($('#gDificilD').value)||0
+    };
+    const temasFiltro = Array.from($('#gTemasChecklist').querySelectorAll('input:checked')).map(i=>i.value);
+    const priorizarNaoUsadas = $('#gPriorizarNaoUsadas').checked;
+    const totalObj = contagensObj.facil+contagensObj.medio+contagensObj.dificil;
+    const totalDisc = contagensDisc.facil+contagensDisc.medio+contagensDisc.dificil;
+
+    if(totalObj + totalDisc === 0){
+      $('#gerarMsg').textContent = 'Informe ao menos 1 questão (objetiva ou discursiva).';
+      $('#gerarMsg').style.color = 'var(--danger)';
+      return null;
+    }
+
+    const exclude = new Set();
+    const parteI = montarParte('objetiva', contagensObj, temasFiltro, priorizarNaoUsadas, exclude);
+    const parteII = montarParte('discursiva', contagensDisc, temasFiltro, priorizarNaoUsadas, exclude);
+
+    const faltando = [...parteI.faltando, ...parteII.faltando];
+    let avisoTexto = '';
+    if(faltando.length){
+      avisoTexto = 'Atenção: não há questões suficientes para ' +
+        faltando.map(f=>`${dificuldadeLabel(f.nivel)} (pedidas ${f.qtd}, encontradas ${f.encontradas})`).join('; ') +
+        (temasFiltro.length ? ' considerando os temas selecionados.' : '.');
+    }
+
+    parteI.lista.forEach((q,i)=> q.numero = i+1);
+    parteII.lista.forEach((q,i)=> q.numero = i+1);
+
+    return {
+      titulo: $('#gTitulo').value.trim() || 'Prova sem título',
+      semestre: $('#gSemestre').value.trim(),
+      professora: $('#gProfessora').value.trim(),
+      valor: $('#gValor').value.trim(),
+      duracao: $('#gDuracao').value.trim(),
+      temasFiltro, priorizarNaoUsadas,
+      contagens: contagensObj,
+      contagensDiscursiva: contagensDisc,
+      questoes: parteI.lista,
+      questoesDiscursivas: parteII.lista,
+      aviso: avisoTexto
+    };
+  }
+
+  $('#btnGerarRascunho').addEventListener('click', ()=>{
+    $('#gerarMsg').textContent='';
+    const r = buildRascunho();
+    if(!r) return;
+    rascunho = r;
+    renderRascunho();
+  });
+
+  $('#btnReshuffle').addEventListener('click', ()=>{
+    const r = buildRascunho();
+    if(!r) return;
+    rascunho = r;
+    renderRascunho();
+    toast('Nova seleção sorteada.');
+  });
+
+  function renderRascunho(){
+    $('#rascunhoCard').style.display='block';
+    const totalQ = rascunho.questoes.length + rascunho.questoesDiscursivas.length;
+    $('#rascunhoResumo').innerHTML =
+      `<strong>${totalQ}</strong> questões selecionadas — ` +
+      `Parte I objetiva: ${rascunho.questoes.length} (fácil: ${rascunho.contagens.facil}, médio: ${rascunho.contagens.medio}, difícil: ${rascunho.contagens.dificil})` +
+      (rascunho.questoesDiscursivas.length ? ` · Parte II discursiva: ${rascunho.questoesDiscursivas.length} (fácil: ${rascunho.contagensDiscursiva.facil}, médio: ${rascunho.contagensDiscursiva.medio}, difícil: ${rascunho.contagensDiscursiva.dificil})` : '') +
+      (rascunho.temasFiltro.length ? ` · temas: ${rascunho.temasFiltro.join(', ')}` : '') +
+      (rascunho.aviso ? `<br><span style="color:var(--warn)">⚠️ ${escapeHtml(rascunho.aviso)}</span>` : '');
+
+    function renderQ(q, i, prefixo){
+      const alts = (q.alternativas||[]).map((a,j)=>{
+        const letra = String.fromCharCode(97+j);
+        const correta = j === q.corretaIndex;
+        return `<div class="alt ${correta?'correct':''}">${letra}) ${nl2br(a)}${correta?' ✓':''}</div>`;
+      }).join('');
+      return `<div class="q-preview">
+        <div class="meta">${prefixo}${i+1}. ${escapeHtml(q.tema)} · <span class="badge ${q.dificuldade}">${dificuldadeLabel(q.dificuldade)}</span></div>
+        <div class="enun">${nl2br(q.enunciado)}</div>
+        ${alts}
+      </div>`;
+    }
+
+    let html = '';
+    if(rascunho.questoes.length){
+      html += '<p style="font-weight:700">Parte I — objetiva</p>';
+      html += rascunho.questoes.map((q,i)=> renderQ(q,i,'')).join('');
+    }
+    if(rascunho.questoesDiscursivas.length){
+      html += '<p style="font-weight:700;margin-top:14px">Parte II — discursiva</p>';
+      html += rascunho.questoesDiscursivas.map((q,i)=> renderQ(q,i,'')).join('');
+    }
+    $('#rascunhoLista').innerHTML = html;
+  }
+
+  $('#btnSalvarProva').addEventListener('click', async ()=>{
+    if(!rascunho) return;
+    $('#salvarProvaMsg').textContent = 'salvando…';
+    const now = new Date().toISOString();
+    const provaId = uid();
+    const { error: errProva } = await sb.from('iaps1_provas').insert({
+      id: provaId,
+      titulo: rascunho.titulo,
+      semestre: rascunho.semestre,
+      professora: rascunho.professora,
+      valor: rascunho.valor,
+      duracao: rascunho.duracao,
+      criadoEm: now,
+      contagens: rascunho.contagens,
+      contagensDiscursiva: rascunho.contagensDiscursiva,
+      temasFiltro: rascunho.temasFiltro,
+      questoes: rascunho.questoes,
+      questoesDiscursivas: rascunho.questoesDiscursivas
+    });
+    if(errProva){
+      $('#salvarProvaMsg').textContent = 'Erro ao salvar: ' + errProva.message;
+      return;
+    }
+    // marca cada questão usada (ambas as partes)
+    for(const q of [...rascunho.questoes, ...rascunho.questoesDiscursivas]){
+      const { data: atual } = await sb.from('iaps1_questoes').select('historicoUso').eq('id', q.questaoId).single();
+      const hist = Array.isArray(atual && atual.historicoUso) ? atual.historicoUso.slice() : [];
+      hist.push({provaTitulo: rascunho.titulo, provaId, data: now});
+      await sb.from('iaps1_questoes').update({ usadoAnteriormente: true, historicoUso: hist }).eq('id', q.questaoId);
+    }
+    $('#salvarProvaMsg').textContent = '';
+    toast('Prova salva com sucesso!');
+    rascunho = null;
+    $('#rascunhoCard').style.display='none';
+    $('#gTitulo').value=''; $('#gSemestre').value=''; $('#gProfessora').value=''; $('#gValor').value=''; $('#gDuracao').value='';
+    $('#gFacil').value=0; $('#gMedio').value=0; $('#gDificil').value=0;
+    $('#gFacilD').value=0; $('#gMedioD').value=0; $('#gDificilD').value=0;
+    $$('nav.tabs button').forEach(b=>b.classList.toggle('active', b.dataset.tab==='provas'));
+    $$('main > section').forEach(s=> s.style.display='none');
+    $('#tab-provas').style.display='block';
+    carregarQuestoes(); carregarProvas();
+  });
+
+  // ---------- provas geradas ----------
+  function renderProvasTable(){
+    $('#provasEmpty').style.display = provas.length ? 'none' : 'block';
+    $('#provasTbody').innerHTML = provas.map(p=>{
+      const data = p.criadoEm ? new Date(p.criadoEm).toLocaleDateString('pt-BR') : '';
+      const n = (p.questoes||[]).length + (p.questoesDiscursivas||[]).length;
+      return `<tr>
+        <td>${escapeHtml(p.titulo||'')}</td>
+        <td>${escapeHtml(p.semestre||'')}</td>
+        <td>${data}</td>
+        <td>${n}</td>
+        <td><button class="btn secondary small" data-id="${p.id}" data-act="abrir">abrir</button></td>
+      </tr>`;
+    }).join('');
+    $('#provasTbody').querySelectorAll('[data-act="abrir"]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const p = provas.find(x=>x.id===btn.dataset.id);
+        openProvaView(p);
+      });
+    });
+  }
+
+  function openProvaView(p){
+    currentViewProva = p;
+    viewMode = 'prova';
+    $('#viewProvaCard').style.display='block';
+    $('#viewProvaTitulo').textContent = p.titulo + (p.semestre ? ' — '+p.semestre : '');
+    renderProvaView();
+    $('#viewProvaCard').scrollIntoView({behavior:'smooth'});
+  }
+
+  $('#btnMostrarProva').addEventListener('click', ()=>{ viewMode='prova'; renderProvaView(); });
+  $('#btnMostrarGabarito').addEventListener('click', ()=>{ viewMode='gabarito'; renderProvaView(); });
+  $('#btnImprimir').addEventListener('click', ()=>{
+    try{
+      $('#printArea').innerHTML = $('#viewProvaConteudo').innerHTML;
+      window.print();
+    }catch(e){
+      toast('Não foi possível abrir a impressão aqui — use o botão "Baixar" para abrir o arquivo e imprimir de lá.');
+    }
+  });
+
+  // download simples via Blob — funciona em qualquer navegador fora do sandbox do Claude
+  function baixarArquivo(filename, content, mime){
+    const blob = new Blob([content], {type: mime || 'text/plain'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(()=> URL.revokeObjectURL(url), 2000);
+  }
+
+  $('#inputImportarJSON').addEventListener('change', async (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    try{
+      const texto = await file.text();
+      const payload = JSON.parse(texto);
+      const lista = Array.isArray(payload) ? payload : (payload.questoes || []);
+      if(!lista.length){ toast('Arquivo sem questões reconhecíveis.'); return; }
+
+      // evita duplicar: casa pelo idOriginal (ou pelo id, se o backup não tiver idOriginal)
+      const { data: existentes } = await sb.from('iaps1_questoes').select('id, idOriginal');
+      const porOriginal = new Map((existentes||[]).filter(q=>q.idOriginal).map(q=>[q.idOriginal, q.id]));
+
+      const paraInserir = [];
+      const paraAtualizar = [];
+      lista.forEach(q=>{
+        const idOriginal = q.idOriginal || q.id || null;
+        const linha = Object.assign({}, q);
+        delete linha.id;
+        linha.idOriginal = idOriginal;
+        if(idOriginal && porOriginal.has(idOriginal)){
+          paraAtualizar.push(Object.assign({ id: porOriginal.get(idOriginal) }, linha));
+        } else {
+          linha.id = uid();
+          paraInserir.push(linha);
+        }
+      });
+
+      if(paraInserir.length){
+        const { error } = await sb.from('iaps1_questoes').insert(paraInserir);
+        if(error){ toast('Erro ao importar: ' + error.message); return; }
+      }
+      for(const row of paraAtualizar){
+        const { id, ...resto } = row;
+        await sb.from('iaps1_questoes').update(resto).eq('id', id);
+      }
+      toast(`Importação concluída: ${paraInserir.length} novas, ${paraAtualizar.length} atualizadas.`);
+      carregarQuestoes();
+    }catch(err){
+      toast('Erro ao ler o arquivo: ' + (err && err.message || err));
+    } finally {
+      e.target.value = '';
+    }
+  });
+
+  $('#btnBaixar').addEventListener('click', ()=>{
+    if(!currentViewProva){ toast('Abra uma prova primeiro.'); return; }
+    const p = currentViewProva;
+    const conteudo = $('#viewProvaConteudo').innerHTML;
+    const titulo = escapeHtml(p.titulo||'Prova') + (viewMode==='gabarito' ? ' - Gabarito' : '');
+    const html = `<!doctype html>
+<html lang="pt-BR"><head><meta charset="UTF-8">
+<title>${titulo}</title>
+<style>
+  body{ font-family: Georgia, 'Times New Roman', serif; color:#111; max-width:800px; margin:30px auto; padding:0 20px; line-height:1.5; }
+  .alt{ padding:2px 0; }
+  .alt.correct{ color:#15803d; font-weight:700; }
+  table{ border-collapse:collapse; }
+  @media print{ body{ margin:0; padding:14px; } }
+</style>
+</head><body>${conteudo}
+<script>
+  window.addEventListener('load', ()=> setTimeout(()=> window.print(), 300));
+<\/script>
+</body></html>`;
+    const nomeArquivo = (p.titulo||'prova').replace(/[^\w\-]+/g,'_') + (viewMode==='gabarito'?'_gabarito':'') + '.html';
+    baixarArquivo(nomeArquivo, html, 'text/html');
+    toast('Arquivo baixado — abra-o e use Ctrl+P / Cmd+P para salvar como PDF.');
+  });
+
+  function buildCapaHtml(p){
+    const nObj = (p.questoes||[]).length;
+    const nDisc = (p.questoesDiscursivas||[]).length;
+    const maxAlts = Math.max(4, ...(p.questoes||[]).map(q=>(q.alternativas||[]).length));
+    const letras = Array.from({length:maxAlts}, (_,i)=> String.fromCharCode(65+i));
+    const valor = p.valor || '— pontos';
+    const duracao = p.duracao || '— horas';
+    const gabaritoRows = Array.from({length:nObj}, (_,i)=> `
+      <tr>
+        <td style="border:1px solid #333;padding:4px 8px;text-align:center;font-family:Georgia,serif">${i+1}</td>
+        ${letras.map(l=>`<td style="border:1px solid #333;padding:4px 8px;text-align:center;font-family:Georgia,serif">${l}</td>`).join('')}
+      </tr>`).join('');
+
+    const composicaoTexto = nDisc > 0
+      ? `Esta prova é composta por duas partes: <strong>Parte I – prova objetiva, com ${nObj} (${nObj===1?'uma':nObj}) questões de múltipla escolha</strong>; <strong>Parte II – prova discursiva, com ${nDisc} (${nDisc===1?'uma':nDisc}) questões abertas</strong>.`
+      : `Esta prova é composta por <strong>${nObj} (${nObj===1?'uma':nObj}) questões de múltipla escolha</strong>.`;
+
+    return `
+    <div class="page-break" style="font-family:Georgia,'Times New Roman',serif;color:#111;font-size:13px;line-height:1.45;">
+      <table style="width:100%;border-collapse:collapse;margin-bottom:10px">
+        <tr>
+          <td style="width:70%;text-align:center;vertical-align:middle;border-bottom:2px solid #111;padding-bottom:8px">
+            <div style="font-size:14px">Universidade Federal de Minas Gerais</div>
+            <div style="font-size:14px">Faculdade de Medicina</div>
+            <div style="font-size:14px">Departamento de Medicina Preventiva e Social</div>
+            <div style="font-size:14px;font-weight:bold">Disciplina de Iniciação à Atenção Primária à Saúde I — IAPS I</div>
+          </td>
+        </tr>
+      </table>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:0;border:1px solid #333">
+        <tr>
+          <td style="border:1px solid #333;padding:5px 8px;width:50%">Professor(a): ${escapeHtml(p.professora||'')}</td>
+          <td style="border:1px solid #333;padding:5px 8px">Turma: ${escapeHtml(p.semestre||'')}</td>
+        </tr>
+        <tr><td colspan="2" style="border:1px solid #333;padding:5px 8px">Nome: </td></tr>
+        <tr>
+          <td style="border:1px solid #333;padding:5px 8px">Matrícula: </td>
+          <td style="border:1px solid #333;padding:0">
+            <table style="width:100%;border-collapse:collapse"><tr>
+              <td style="border-left:1px solid #333;padding:5px 8px;width:60%">Valor: ${escapeHtml(valor)}</td>
+              <td style="border-left:1px solid #333;padding:5px 8px">Nota:</td>
+            </tr></table>
+          </td>
+        </tr>
+      </table>
+
+      <div style="text-align:center;font-weight:bold;text-decoration:underline;margin:18px 0 10px">ORIENTAÇÕES</div>
+      <p style="margin:0 0 10px">${composicaoTexto} A duração da prova é de <strong>${escapeHtml(duracao)}</strong>. Faça-a com tranquilidade, mas controle o seu tempo!</p>
+      ${nObj > 0 ? `<p style="margin:0 0 10px">Para cada uma das questões da Parte I são apresentadas alternativas classificadas com as letras ${letras.join(', ')}, e só uma responde da melhor forma possível ao quesito proposto. Você só deve assinalar <strong>UMA RESPOSTA</strong> no <strong>GABARITO</strong>. A marcação de nenhuma ou de mais de uma alternativa anula a questão, <strong>MESMO QUE UMA DAS RESPOSTAS SEJA A CORRETA</strong>.</p>` : ''}
+      ${nDisc > 0 ? `<p style="margin:0 0 10px">As questões discursivas da Parte II têm espaço próprio para escrita das respostas (favor não ultrapassar as linhas indicadas).</p>` : ''}
+      <p style="margin:0 0 10px">O espaço da prova poderá ser utilizado para anotações, mas somente as respostas assinaladas no <strong>GABARITO</strong> (Parte I) e escritas no espaço próprio (Parte II) serão objeto de correção.</p>
+      ${nObj > 0 ? `
+      <p style="margin:0 0 10px">No <strong>GABARITO</strong> a seguir, para cada questão da Parte I assinale a opção correta:</p>
+      <table style="border-collapse:collapse;margin:0 auto">
+        <tr>
+          <td style="border:1px solid #333;padding:4px 8px;text-align:center;font-weight:bold">QUESTÃO</td>
+          <td colspan="${letras.length}" style="border:1px solid #333;padding:4px 8px;text-align:center;font-weight:bold">GABARITO</td>
+        </tr>
+        ${gabaritoRows}
+      </table>` : ''}
+    </div>`;
+  }
+
+  function renderProvaView(){
+    const p = currentViewProva;
+    if(!p) return;
+    const capa = viewMode==='prova' ? buildCapaHtml(p) : '';
+    const header = `<div style="border-bottom:2px solid #333;padding-bottom:10px;margin-bottom:16px;">
+      <div style="font-size:17px;font-weight:700">${escapeHtml(p.titulo)}</div>
+      <div class="muted">${escapeHtml(p.semestre||'')} ${viewMode==='gabarito' ? ' · GABARITO (uso do professor)' : ''}</div>
+      ${viewMode==='prova' ? `<div style="margin-top:10px">Nome: _______________________________________________ &nbsp;&nbsp; Matrícula: ______________</div>` : ''}
+    </div>`;
+
+    function renderObjetiva(q, i){
+      const alts = q.alternativas.map((a,j)=>{
+        const letra = String.fromCharCode(97+j);
+        const correta = j===q.corretaIndex;
+        return `<div class="alt ${viewMode==='gabarito' && correta ? 'correct':''}" style="margin-left:14px">${letra}) ${nl2br(a)}</div>`;
+      }).join('');
+      const extra = viewMode==='gabarito' ? `
+        ${q.discussao ? `<div style="margin-top:6px"><em>Discussão:</em> ${nl2br(q.discussao)}</div>` : ''}
+        ${q.referencia ? `<div><em>Referência:</em> ${nl2br(q.referencia)}</div>` : ''}
+      ` : '';
+      return `<div style="margin-bottom:18px">
+        <div><strong>${i+1}.</strong> ${nl2br(q.enunciado)}</div>
+        ${alts}
+        ${extra}
+      </div>`;
+    }
+
+    function renderDiscursiva(q, i){
+      const linhas = viewMode==='prova'
+        ? Array.from({length:6}, ()=> `<div style="border-bottom:1px solid #999;height:22px;"></div>`).join('')
+        : `<div style="margin-top:6px;padding:8px 10px;background:#f4f4f4;border:1px solid #ccc;border-radius:4px"><em>Resposta esperada:</em><br>${nl2br(q.discussao)}</div>`;
+      return `<div style="margin-bottom:22px">
+        <div><strong>${i+1}.</strong> ${nl2br(q.enunciado)}</div>
+        ${linhas}
+      </div>`;
+    }
+
+    let body = '';
+    if((p.questoes||[]).length){
+      body += `<h3 style="margin:0 0 10px">Parte I — Prova objetiva</h3>`;
+      body += p.questoes.map(renderObjetiva).join('');
+    }
+    if((p.questoesDiscursivas||[]).length){
+      body += `<h3 style="margin:18px 0 10px" class="${(p.questoes||[]).length ? 'page-break-before':''}">Parte II — Prova discursiva</h3>`;
+      body += p.questoesDiscursivas.map(renderDiscursiva).join('');
+    }
+    $('#viewProvaConteudo').innerHTML = capa + header + body;
+  }
+
+  // ---------- init ----------
+  initDb();
+})();
+</script>
+</body>
+</html>
